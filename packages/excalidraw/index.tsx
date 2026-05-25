@@ -381,6 +381,23 @@ export { LiveCollaborationTrigger };
 export { Stats } from "./components/Stats";
 
 export { DefaultSidebar } from "./components/DefaultSidebar";
+export {
+  getShapeTemplates,
+  getShapeTemplateById,
+  registerShapeTemplates,
+  parseShapeTemplatesFile,
+  instantiateShapeTemplate,
+} from "./data/shapeTemplates/shapeTemplates";
+export {
+  SHAPE_TEMPLATES_FILE_TYPE,
+  SHAPE_TEMPLATES_VERSION,
+} from "./data/shapeTemplates/types";
+export type {
+  ShapeTemplate,
+  ShapeTemplateElement,
+  ShapeTemplatesFile,
+  ExcalidrawTemplateIds,
+} from "./data/shapeTemplates/types";
 export { TTDDialog } from "./components/TTDDialog/TTDDialog";
 export { TTDDialogTrigger } from "./components/TTDDialog/TTDDialogTrigger";
 export { TTDStreamFetch } from "./components/TTDDialog/utils/TTDStreamFetch";

@@ -1,0 +1,153 @@
+import { pointFrom } from "@excalidraw/math";
+
+import type { ShapeTemplate } from "./types";
+
+/** Built-in shape templates shipped with Excalidraw. */
+export const DEFAULT_SHAPE_TEMPLATES: readonly ShapeTemplate[] = [
+  {
+    id: "labeled-box",
+    name: "Labeled box",
+    description: "Rectangle with centered label",
+    elements: [
+      {
+        type: "rectangle",
+        x: 0,
+        y: 0,
+        width: 140,
+        height: 72,
+        backgroundColor: "#a5d8ff",
+        strokeColor: "#1971c2",
+        label: { text: "Label" },
+      },
+    ],
+  },
+  {
+    id: "grouped-pair",
+    name: "Grouped pair",
+    description: "Two shapes inserted as a group",
+    elements: [
+      {
+        type: "ellipse",
+        x: 0,
+        y: 0,
+        width: 80,
+        height: 80,
+        backgroundColor: "#ffc9c9",
+        groupIds: ["template-group-1"],
+      },
+      {
+        type: "ellipse",
+        x: 100,
+        y: 0,
+        width: 80,
+        height: 80,
+        backgroundColor: "#b2f2bb",
+        groupIds: ["template-group-1"],
+      },
+    ],
+  },
+  {
+    id: "mini-flowchart",
+    name: "Mini flowchart",
+    description: "Start, process, and connector arrow",
+    elements: [
+      {
+        type: "ellipse",
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 56,
+        backgroundColor: "#d0bfff",
+        label: { text: "Start" },
+      },
+      {
+        type: "rectangle",
+        x: 0,
+        y: 96,
+        width: 100,
+        height: 56,
+        backgroundColor: "#ffec99",
+        label: { text: "Step" },
+      },
+      {
+        type: "arrow",
+        x: 50,
+        y: 56,
+        width: 0,
+        height: 40,
+        points: [pointFrom(0, 0), pointFrom(0, 40)],
+      },
+    ],
+  },
+  {
+    id: "decision-branch",
+    name: "Decision branch",
+    description: "Diamond decision with two outcomes",
+    elements: [
+      {
+        type: "diamond",
+        x: 40,
+        y: 0,
+        width: 120,
+        height: 80,
+        backgroundColor: "#ffe066",
+        label: { text: "?" },
+      },
+      {
+        type: "rectangle",
+        x: 0,
+        y: 120,
+        width: 90,
+        height: 48,
+        backgroundColor: "#c0eb75",
+        label: { text: "Yes" },
+      },
+      {
+        type: "rectangle",
+        x: 110,
+        y: 120,
+        width: 90,
+        height: 48,
+        backgroundColor: "#ffc9c9",
+        label: { text: "No" },
+      },
+    ],
+  },
+  {
+    id: "sticky-cluster",
+    name: "Sticky cluster",
+    description: "Three grouped sticky notes",
+    elements: [
+      {
+        type: "rectangle",
+        x: 0,
+        y: 0,
+        width: 72,
+        height: 72,
+        backgroundColor: "#fff3bf",
+        roundness: { type: 3 },
+        groupIds: ["template-group-sticky"],
+      },
+      {
+        type: "rectangle",
+        x: 24,
+        y: 24,
+        width: 72,
+        height: 72,
+        backgroundColor: "#ffec99",
+        roundness: { type: 3 },
+        groupIds: ["template-group-sticky"],
+      },
+      {
+        type: "rectangle",
+        x: 48,
+        y: 48,
+        width: 72,
+        height: 72,
+        backgroundColor: "#ffd8a8",
+        roundness: { type: 3 },
+        groupIds: ["template-group-sticky"],
+      },
+    ],
+  },
+];

@@ -432,6 +432,13 @@ import { getShortcutKey } from "../shortcut";
 
 import { tryParseSpreadsheet } from "../charts";
 
+import {
+  getShapeTemplatesByIds,
+  instantiateShapeTemplates,
+  parseShapeTemplatesFile,
+  registerShapeTemplates,
+} from "../data/shapeTemplates/shapeTemplates";
+
 import ConvertElementTypePopup, {
   getConversionTypeFromElements,
   convertElementTypePopupAtom,
@@ -458,6 +465,7 @@ import { findShapeByKey } from "./shapes";
 
 import UnlockPopup from "./UnlockPopup";
 
+import type { ExcalidrawTemplateIds } from "../data/shapeTemplates/types";
 import type { ExcalidrawLibraryIds } from "../data/types";
 
 import type {
@@ -2932,6 +2940,9 @@ class App extends React.Component<AppProps, AppState> {
           .catch((error) => {
             console.error(error);
           });
+      }
+      if (this.props.shapeTemplates?.length) {
+        registerShapeTemplates(this.props.shapeTemplates);
       }
     } catch (error: any) {
       console.error(error);
@@ -12155,6 +12166,40 @@ class App extends React.Component<AppProps, AppState> {
 
           this.addElementsFromPasteOrLibrary({
             elements: distributeLibraryItemsOnSquareGrid(libraryItems),
+            position: event,
+            files: null,
+          });
+        }
+      } catch (error: any) {
+        this.setState({ errorMessage: error.message });
+      }
+      return;
+    }
+
+    const excalidrawTemplate_ids = dataTransferList.getData(
+      MIME_TYPES.excalidrawTemplateIds,
+    );
+    const excalidrawTemplate_data = dataTransferList.getData(
+      MIME_TYPES.excalidrawTemplates,
+    );
+    if (excalidrawTemplate_ids || excalidrawTemplate_data) {
+      try {
+        const templates = excalidrawTemplate_data
+          ? parseShapeTemplatesFile(excalidrawTemplate_data)
+          : getShapeTemplatesByIds(
+              (JSON.parse(excalidrawTemplate_ids!) as ExcalidrawTemplateIds)
+                .templateIds,
+            );
+        if (templates.length) {
+          const elements = instantiateShapeTemplates(templates);
+          const { duplicatedElements } = duplicateElements({
+            type: "everything",
+            elements,
+            randomizeSeed: true,
+            preserveFrameChildrenOrder: true,
+          });
+          this.addElementsFromPasteOrLibrary({
+            elements: duplicatedElements,
             position: event,
             files: null,
           });
