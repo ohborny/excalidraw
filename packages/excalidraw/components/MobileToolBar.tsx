@@ -21,6 +21,7 @@ import {
   FreedrawIcon,
   EraserIcon,
   RectangleIcon,
+  StarIcon,
   ArrowIcon,
   extraToolsIcon,
   DiamondIcon,
@@ -46,6 +47,11 @@ const SHAPE_TOOLS = [
     type: "rectangle",
     icon: RectangleIcon,
     title: capitalizeString(t("toolBar.rectangle")),
+  },
+  {
+    type: "star",
+    icon: StarIcon,
+    title: capitalizeString(t("toolBar.star")),
   },
   {
     type: "diamond",
@@ -95,7 +101,7 @@ export const MobileToolBar = ({
   const activeTool = app.state.activeTool;
   const [isOtherShapesMenuOpen, setIsOtherShapesMenuOpen] = useState(false);
   const [lastActiveGenericShape, setLastActiveGenericShape] = useState<
-    "rectangle" | "diamond" | "ellipse"
+    "rectangle" | "star" | "diamond" | "ellipse"
   >("rectangle");
   const [lastActiveLinearElement, setLastActiveLinearElement] = useState<
     "arrow" | "line"

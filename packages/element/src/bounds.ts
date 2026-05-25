@@ -177,6 +177,22 @@ export class ElementBounds {
       ];
     } else if (isLinearElement(element)) {
       bounds = getLinearElementRotatedBounds(element, cx, cy, elementsMap);
+    } else if (element.type === "star") {
+      const starPoints = getStarPoints(element).map(([lx, ly]) =>
+        pointRotateRads(
+          pointFrom(element.x + lx, element.y + ly),
+          pointFrom(cx, cy),
+          element.angle,
+        ),
+      );
+      const xs = starPoints.map((p) => p[0]);
+      const ys = starPoints.map((p) => p[1]);
+      bounds = [
+        Math.min(...xs),
+        Math.min(...ys),
+        Math.max(...xs),
+        Math.max(...ys),
+      ];
     } else if (element.type === "diamond") {
       const [x11, y11] = pointRotateRads(
         pointFrom(cx, y1),
@@ -535,6 +551,36 @@ export const getDiamondPoints = (element: ExcalidrawElement) => {
   const leftY = rightY;
 
   return [topX, topY, rightX, rightY, bottomX, bottomY, leftX, leftY];
+};
+
+/** Inner/outer radius ratio for a regular pentagram */
+const STAR_INNER_RADIUS_RATIO = 0.381966011250105;
+
+export const getStarPoints = (
+  element: ExcalidrawElement,
+): [number, number][] => {
+  const cx = element.width / 2;
+  const cy = element.height / 2;
+  const outerRx = cx;
+  const outerRy = cy;
+  const points: [number, number][] = [];
+
+  for (let i = 0; i < 10; i++) {
+    const angle = -Math.PI / 2 + (i * Math.PI) / 5;
+    const radius = i % 2 === 0 ? 1 : STAR_INNER_RADIUS_RATIO;
+    let x = cx + radius * outerRx * Math.cos(angle);
+    let y = cy + radius * outerRy * Math.sin(angle);
+    // avoid exact 0 for rough.js (see getDiamondPoints)
+    if (x === 0) {
+      x = 0.01;
+    }
+    if (y === 0) {
+      y = 0.01;
+    }
+    points.push([x, y]);
+  }
+
+  return points;
 };
 
 // reference: https://eliot-jones.com/2019/12/cubic-bezier-curve-bounding-boxes

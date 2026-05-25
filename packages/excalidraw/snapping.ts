@@ -235,7 +235,9 @@ export const getElementsCorners = (
     const halfHeight = (y2 - y1) / 2;
 
     if (
-      (element.type === "diamond" || element.type === "ellipse") &&
+      (element.type === "diamond" ||
+        element.type === "star" ||
+        element.type === "ellipse") &&
       !boundingBoxCorners
     ) {
       const leftMid = pointRotateRads<GlobalPoint>(
@@ -1404,6 +1406,7 @@ export const isActiveToolNonLinearSnappable = (
 ) => {
   return (
     activeToolType === TOOL_TYPE.rectangle ||
+    activeToolType === TOOL_TYPE.star ||
     activeToolType === TOOL_TYPE.ellipse ||
     activeToolType === TOOL_TYPE.diamond ||
     activeToolType === TOOL_TYPE.frame ||

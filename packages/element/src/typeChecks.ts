@@ -182,6 +182,7 @@ export const isBindableElement = (
     element != null &&
     (!element.locked || includeLocked === true) &&
     (element.type === "rectangle" ||
+      element.type === "star" ||
       element.type === "diamond" ||
       element.type === "ellipse" ||
       element.type === "image" ||
@@ -235,6 +236,7 @@ export const isTextBindableContainer = (
     element != null &&
     (!element.locked || includeLocked === true) &&
     (element.type === "rectangle" ||
+      element.type === "star" ||
       element.type === "diamond" ||
       element.type === "ellipse" ||
       isArrowElement(element))
@@ -250,6 +252,7 @@ export const isExcalidrawElement = (
   }
   switch (type) {
     case "text":
+    case "star":
     case "diamond":
     case "rectangle":
     case "iframe":
@@ -276,6 +279,7 @@ export const isFlowchartNodeElement = (
 ): element is ExcalidrawFlowchartNodeElement => {
   return (
     element.type === "rectangle" ||
+    element.type === "star" ||
     element.type === "ellipse" ||
     element.type === "diamond"
   );
