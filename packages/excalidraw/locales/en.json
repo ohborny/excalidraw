@@ -198,7 +198,11 @@
   },
   "shapeTemplates": {
     "hint": "Drag a template onto the canvas, or click to insert at the center.",
-    "title": "Shape templates"
+    "title": "Shape templates",
+    "addSelection": "Add selection to templates",
+    "added": "Added to shape templates",
+    "noSelection": "Select shapes on the canvas to add a template.",
+    "unnamed": "Template {{n}}"
   },
   "library": {
     "noItems": "No items added yet...",

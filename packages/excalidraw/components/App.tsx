@@ -436,7 +436,9 @@ import {
   getShapeTemplatesByIds,
   instantiateShapeTemplates,
   parseShapeTemplatesFile,
+  loadUserShapeTemplatesFromStorage,
   registerShapeTemplates,
+  setHostShapeTemplates,
 } from "../data/shapeTemplates/shapeTemplates";
 
 import ConvertElementTypePopup, {
@@ -2941,9 +2943,6 @@ class App extends React.Component<AppProps, AppState> {
             console.error(error);
           });
       }
-      if (this.props.shapeTemplates?.length) {
-        registerShapeTemplates(this.props.shapeTemplates);
-      }
     } catch (error: any) {
       console.error(error);
       initialData = {
@@ -3158,6 +3157,11 @@ class App extends React.Component<AppProps, AppState> {
 
     if (this.props.autoFocus && this.excalidrawContainerRef.current) {
       this.focusContainer();
+    }
+
+    loadUserShapeTemplatesFromStorage();
+    if (this.props.shapeTemplates?.length) {
+      setHostShapeTemplates(this.props.shapeTemplates);
     }
 
     if (supportsResizeObserver && this.excalidrawContainerRef.current) {

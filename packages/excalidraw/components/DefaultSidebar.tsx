@@ -12,6 +12,7 @@ import type { MarkOptional, Merge } from "@excalidraw/common/utility-types";
 
 import { useTunnels } from "../context/tunnels";
 import { useUIAppState } from "../context/ui-appState";
+import { t } from "../i18n";
 
 import "../components/dropdownMenu/DropdownMenu.scss";
 
@@ -107,7 +108,11 @@ export const DefaultSidebar = Object.assign(
                 <Sidebar.TabTrigger tab={LIBRARY_SIDEBAR_TAB}>
                   {LibraryIcon}
                 </Sidebar.TabTrigger>
-                <Sidebar.TabTrigger tab={SHAPE_TEMPLATES_SIDEBAR_TAB}>
+                <Sidebar.TabTrigger
+                  tab={SHAPE_TEMPLATES_SIDEBAR_TAB}
+                  title={t("shapeTemplates.title")}
+                  aria-label={t("shapeTemplates.title")}
+                >
                   {ShapeTemplatesIcon}
                 </Sidebar.TabTrigger>
                 <DefaultSidebarTabTriggersTunnel.Out />

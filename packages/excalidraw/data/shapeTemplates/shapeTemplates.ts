@@ -1,5 +1,11 @@
 import {
+  LIBRARY_DISABLED_TYPES,
+  randomId,
+} from "@excalidraw/common";
+
+import {
   convertToExcalidrawElements,
+  deepCopyElement,
   getCommonBounds,
   newElementWith,
 } from "@excalidraw/element";
@@ -7,7 +13,13 @@ import {
 import type { ExcalidrawElement } from "@excalidraw/element/types";
 import type { ExcalidrawElementSkeleton } from "@excalidraw/element";
 
+import { atom, editorJotaiStore } from "../../editor-jotai";
+
 import { DEFAULT_SHAPE_TEMPLATES } from "./defaultTemplates";
+import {
+  loadCustomShapeTemplates,
+  saveCustomShapeTemplates,
+} from "./shapeTemplatesStorage";
 import {
   SHAPE_TEMPLATES_FILE_TYPE,
   SHAPE_TEMPLATES_VERSION,
@@ -16,11 +28,23 @@ import {
   type ShapeTemplatesFile,
 } from "./types";
 
-let customShapeTemplates: ShapeTemplate[] = [];
+let hostShapeTemplates: ShapeTemplate[] = [];
+let userShapeTemplates: ShapeTemplate[] = [];
+
+export const shapeTemplatesVersionAtom = atom(0);
+
+const bumpShapeTemplatesVersion = () => {
+  editorJotaiStore.set(shapeTemplatesVersionAtom, (version) => version + 1);
+};
 
 export const getShapeTemplates = (): ShapeTemplate[] => [
   ...DEFAULT_SHAPE_TEMPLATES,
-  ...customShapeTemplates,
+  ...hostShapeTemplates,
+  ...userShapeTemplates,
+];
+
+export const getUserShapeTemplates = (): ShapeTemplate[] => [
+  ...userShapeTemplates,
 ];
 
 export const getShapeTemplateById = (
@@ -28,12 +52,31 @@ export const getShapeTemplateById = (
 ): ShapeTemplate | undefined =>
   getShapeTemplates().find((template) => template.id === id);
 
+export const loadUserShapeTemplatesFromStorage = (): void => {
+  userShapeTemplates = loadCustomShapeTemplates();
+};
+
+export const setHostShapeTemplates = (templates: ShapeTemplate[]): void => {
+  hostShapeTemplates = templates;
+};
+
 export const registerShapeTemplates = (templates: ShapeTemplate[]): void => {
-  customShapeTemplates = [...customShapeTemplates, ...templates];
+  userShapeTemplates = [...userShapeTemplates, ...templates];
+  saveCustomShapeTemplates(userShapeTemplates);
+  bumpShapeTemplatesVersion();
+};
+
+export const removeShapeTemplate = (id: ShapeTemplate["id"]): void => {
+  userShapeTemplates = userShapeTemplates.filter((template) => template.id !== id);
+  saveCustomShapeTemplates(userShapeTemplates);
+  bumpShapeTemplatesVersion();
 };
 
 export const resetCustomShapeTemplates = (): void => {
-  customShapeTemplates = [];
+  hostShapeTemplates = [];
+  userShapeTemplates = [];
+  saveCustomShapeTemplates([]);
+  bumpShapeTemplatesVersion();
 };
 
 export const isShapeTemplatesFile = (
@@ -81,6 +124,98 @@ const validateShapeTemplates = (templates: unknown): ShapeTemplate[] => {
     }
     return template as ShapeTemplate;
   });
+};
+
+const RUNTIME_ELEMENT_KEYS = new Set([
+  "id",
+  "version",
+  "versionNonce",
+  "seed",
+  "index",
+  "updated",
+  "isDeleted",
+  "link",
+]);
+
+export class ShapeTemplateExportError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ShapeTemplateExportError";
+  }
+}
+
+const elementToTemplateElement = (
+  element: ExcalidrawElement,
+  offset: { minX: number; minY: number },
+  selectedIds: Set<ExcalidrawElement["id"]>,
+): ShapeTemplateElement => {
+  const copy = deepCopyElement(element);
+
+  copy.x -= offset.minX;
+  copy.y -= offset.minY;
+
+  if ("startBinding" in copy && copy.startBinding) {
+    if (!selectedIds.has(copy.startBinding.elementId)) {
+      copy.startBinding = null;
+    }
+  }
+  if ("endBinding" in copy && copy.endBinding) {
+    if (!selectedIds.has(copy.endBinding.elementId)) {
+      copy.endBinding = null;
+    }
+  }
+  if ("frameId" in copy && copy.frameId && !selectedIds.has(copy.frameId)) {
+    copy.frameId = null;
+  }
+  if (
+    "containerId" in copy &&
+    copy.containerId &&
+    !selectedIds.has(copy.containerId)
+  ) {
+    copy.containerId = null;
+  }
+
+  const skeleton: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(copy)) {
+    if (!RUNTIME_ELEMENT_KEYS.has(key) && value !== undefined) {
+      skeleton[key] = value;
+    }
+  }
+
+  return skeleton as ShapeTemplateElement;
+};
+
+export type ExportSelectionAsShapeTemplateOptions = {
+  name: string;
+};
+
+export const exportSelectionAsShapeTemplate = (
+  elements: readonly ExcalidrawElement[],
+  options: ExportSelectionAsShapeTemplateOptions,
+): ShapeTemplate => {
+  if (!elements.length) {
+    throw new ShapeTemplateExportError("No elements selected");
+  }
+
+  for (const type of LIBRARY_DISABLED_TYPES) {
+    if (elements.some((element) => element.type === type)) {
+      throw new ShapeTemplateExportError(
+        `errors.libraryElementTypeError.${type}`,
+      );
+    }
+  }
+
+  const copied = elements.map((element) => deepCopyElement(element));
+  const [minX, minY] = getCommonBounds(copied);
+  const selectedIds = new Set(copied.map((element) => element.id));
+
+  return {
+    id: randomId(),
+    name: options.name,
+    elements: copied.map((element) =>
+      elementToTemplateElement(element, { minX, minY }, selectedIds),
+    ),
+  };
 };
 
 /** Normalize element positions so the template bounding box starts at (0, 0). */

@@ -382,9 +382,11 @@ export { Stats } from "./components/Stats";
 
 export { DefaultSidebar } from "./components/DefaultSidebar";
 export {
+  exportSelectionAsShapeTemplate,
   getShapeTemplates,
   getShapeTemplateById,
   registerShapeTemplates,
+  removeShapeTemplate,
   parseShapeTemplatesFile,
   instantiateShapeTemplate,
 } from "./data/shapeTemplates/shapeTemplates";
