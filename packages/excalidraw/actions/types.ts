@@ -103,6 +103,7 @@ export type ActionName =
   | "ungroup"
   | "goToCollaborator"
   | "addToLibrary"
+  | "addToShapeTemplates"
   | "changeRoundness"
   | "alignTop"
   | "alignBottom"

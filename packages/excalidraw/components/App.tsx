@@ -294,6 +294,7 @@ import type { Mutable, ValueOf } from "@excalidraw/common/utility-types";
 
 import {
   actionAddToLibrary,
+  actionAddToShapeTemplates,
   actionBringForward,
   actionBringToFront,
   actionCopy,
@@ -357,6 +358,13 @@ import {
 
 import { exportCanvas, loadFromBlob } from "../data";
 import Library, { distributeLibraryItemsOnSquareGrid } from "../data/library";
+import {
+  BUILTIN_SHAPE_TEMPLATES,
+  filterShapeTemplatesByIds,
+  getShapeTemplatesForInstantiation,
+  parseShapeTemplatesJSON,
+  shapeTemplatesAtom,
+} from "../data/shapeTemplates";
 import { restoreAppState, restoreElements } from "../data/restore";
 import { getCenter, getDistance } from "../gesture";
 import { History } from "../history";
@@ -458,7 +466,10 @@ import { findShapeByKey } from "./shapes";
 
 import UnlockPopup from "./UnlockPopup";
 
-import type { ExcalidrawLibraryIds } from "../data/types";
+import type {
+  ExcalidrawLibraryIds,
+  ExcalidrawShapeTemplateIds,
+} from "../data/types";
 
 import type {
   RenderInteractiveSceneCallback,
@@ -12164,6 +12175,39 @@ class App extends React.Component<AppProps, AppState> {
       return;
     }
 
+    const excalidrawShapeTemplate_ids = dataTransferList.getData(
+      MIME_TYPES.excalidrawShapeTemplateIds,
+    );
+    const excalidrawShapeTemplate_data = dataTransferList.getData(
+      MIME_TYPES.excalidrawShapeTemplates,
+    );
+    if (excalidrawShapeTemplate_ids || excalidrawShapeTemplate_data) {
+      try {
+        let templates = null;
+        if (excalidrawShapeTemplate_ids) {
+          const { templateIds } = JSON.parse(
+            excalidrawShapeTemplate_ids,
+          ) as ExcalidrawShapeTemplateIds;
+          const { customTemplates } = editorJotaiStore.get(shapeTemplatesAtom);
+          const allTemplates = [...BUILTIN_SHAPE_TEMPLATES, ...customTemplates];
+          templates = filterShapeTemplatesByIds(allTemplates, templateIds);
+        } else if (excalidrawShapeTemplate_data) {
+          templates = parseShapeTemplatesJSON(excalidrawShapeTemplate_data);
+        }
+        if (templates?.length) {
+          this.addElementsFromPasteOrLibrary({
+            elements: getShapeTemplatesForInstantiation(templates),
+            position: event,
+            files: null,
+            preserveFrameChildrenOrder: true,
+          });
+        }
+      } catch (error: any) {
+        this.setState({ errorMessage: error.message });
+      }
+      return;
+    }
+
     if (fileItems.length > 0) {
       const { file, fileHandle } = fileItems[0];
       if (file) {
@@ -12772,6 +12816,7 @@ class App extends React.Component<AppProps, AppState> {
       actionUngroup,
       CONTEXT_MENU_SEPARATOR,
       actionAddToLibrary,
+      actionAddToShapeTemplates,
       ...zIndexActions,
       CONTEXT_MENU_SEPARATOR,
       actionFlipHorizontal,

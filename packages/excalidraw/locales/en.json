@@ -108,6 +108,7 @@
     "collaborators": "Collaborators",
     "toggleGrid": "Toggle grid",
     "addToLibrary": "Add to library",
+    "addToShapeTemplates": "Add to shape templates",
     "removeFromLibrary": "Remove from library",
     "libraryLoadingMessage": "Loading library…",
     "libraries": "Browse libraries",
@@ -195,6 +196,14 @@
     "title": "Link to object",
     "desc": "Click on a shape on canvas or paste a link.",
     "notFound": "Linked object wasn't found on canvas."
+  },
+  "shapeTemplates": {
+    "builtin": "Built-in templates",
+    "custom": "Your templates",
+    "hint_emptyCustom": "Select shapes on the canvas and click the + tile to save them as a template.",
+    "untitled": "Custom template",
+    "added": "Added to shape templates",
+    "clearCustom": "Clear custom templates"
   },
   "library": {
     "noItems": "No items added yet...",

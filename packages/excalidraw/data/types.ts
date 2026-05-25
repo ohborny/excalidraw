@@ -64,3 +64,5 @@ export interface ImportedLibraryData extends Partial<ExportedLibraryData> {
 export type ExcalidrawLibraryIds = {
   itemIds: LibraryItem["id"][];
 };
+
+export type { ExcalidrawShapeTemplateIds } from "./shapeTemplates/types";
