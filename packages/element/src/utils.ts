@@ -34,7 +34,7 @@ import type {
   Zoom,
 } from "@excalidraw/excalidraw/types";
 
-import { elementCenterPoint, getDiamondPoints } from "./bounds";
+import { elementCenterPoint, getDiamondPoints, getStarPoints } from "./bounds";
 
 import { generateLinearCollisionShape } from "./shape";
 
@@ -53,6 +53,7 @@ import type {
   ExcalidrawArrowElement,
   ExcalidrawBindableElement,
   ExcalidrawDiamondElement,
+  ExcalidrawStarElement,
   ExcalidrawElement,
   ExcalidrawFreeDrawElement,
   ExcalidrawLinearElement,
@@ -456,6 +457,53 @@ export function deconstructDiamondElement(
   ];
 
   const shape = [sides, corners.flat()] as ElementShape;
+
+  setElementShapesCacheEntry(element, shape, offset);
+
+  return shape;
+}
+
+/**
+ * Get the **unrotated** building components of a star element as line segments.
+ */
+const getStarGlobalPoints = (
+  element: ExcalidrawStarElement,
+  offset: number,
+): GlobalPoint[] => {
+  const cx = element.width / 2;
+  const cy = element.height / 2;
+  const outerR = Math.min(cx, cy);
+  const scale = offset === 0 ? 1 : (outerR + offset) / outerR;
+
+  return getStarPoints(element).map(([px, py]) => {
+    const dx = px - cx;
+    const dy = py - cy;
+    return pointFrom<GlobalPoint>(
+      element.x + cx + dx * scale,
+      element.y + cy + dy * scale,
+    );
+  });
+};
+
+export function deconstructStarElement(
+  element: ExcalidrawStarElement,
+  offset: number = 0,
+): [LineSegment<GlobalPoint>[], Curve<GlobalPoint>[]] {
+  const cachedShape = getElementShapesCacheEntry(element, offset);
+
+  if (cachedShape) {
+    return cachedShape;
+  }
+
+  const globalPoints = getStarGlobalPoints(element, offset);
+
+  const sides: LineSegment<GlobalPoint>[] = [];
+  for (let i = 0; i < globalPoints.length; i++) {
+    const next = globalPoints[(i + 1) % globalPoints.length];
+    sides.push(lineSegment(globalPoints[i], next));
+  }
+
+  const shape = [sides, []] as ElementShape;
 
   setElementShapesCacheEntry(element, shape, offset);
 

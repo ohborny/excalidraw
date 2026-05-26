@@ -67,6 +67,7 @@ import type {
   ExcalidrawEllipseElement,
   ExcalidrawLinearElement,
   ExcalidrawRectangleElement,
+  ExcalidrawStarElement,
   ExcalidrawSelectionElement,
   ExcalidrawTextContainer,
   ExcalidrawTextElementWithContainer,
@@ -82,6 +83,7 @@ import "./ConvertElementTypePopup.scss";
 import { ToolButton } from "./ToolButton";
 import {
   DiamondIcon,
+  StarIcon,
   elbowArrowIcon,
   EllipseIcon,
   LineIcon,
@@ -99,12 +101,13 @@ const GAP_VERTICAL = 10;
 
 type ExcalidrawConvertibleElement =
   | ExcalidrawRectangleElement
+  | ExcalidrawStarElement
   | ExcalidrawDiamondElement
   | ExcalidrawEllipseElement
   | ExcalidrawLinearElement;
 
 // indicates order of switching
-const GENERIC_TYPES = ["rectangle", "diamond", "ellipse"] as const;
+const GENERIC_TYPES = ["rectangle", "star", "diamond", "ellipse"] as const;
 // indicates order of switching
 const LINEAR_TYPES = [
   "line",
@@ -301,6 +304,7 @@ const Panel = ({
       : conversionType === "generic"
       ? [
           ["rectangle", RectangleIcon],
+          ["star", StarIcon],
           ["diamond", DiamondIcon],
           ["ellipse", EllipseIcon],
         ]
