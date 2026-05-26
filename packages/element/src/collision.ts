@@ -34,8 +34,9 @@ import {
   getCenterForBounds,
   getCubicBezierCurveBound,
   getDiamondPoints,
-  getStarPoints,
   getElementBounds,
+  getStarPoints,
+  getStarElementSides,
   pointInsideBounds,
 } from "./bounds";
 import {
@@ -699,19 +700,6 @@ const intersectStarWithLineSegment = (
   );
 
   return intersections;
-};
-
-const getStarElementSides = (
-  element: ExcalidrawStarElement,
-): LineSegment<GlobalPoint>[] => {
-  const points = getStarPoints(element).map(([lx, ly]) =>
-    pointFrom<GlobalPoint>(element.x + lx, element.y + ly),
-  );
-  const sides: LineSegment<GlobalPoint>[] = [];
-  for (let i = 0; i < points.length; i++) {
-    sides.push(lineSegment(points[i], points[(i + 1) % points.length]));
-  }
-  return sides;
 };
 
 const intersectDiamondWithLineSegment = (

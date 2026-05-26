@@ -1,14 +1,12 @@
 import {
   curvePointDistance,
   distanceToLineSegment,
-  lineSegment,
-  pointFrom,
   pointRotateRads,
 } from "@excalidraw/math";
 
 import { ellipse, ellipseDistanceFromPoint } from "@excalidraw/math/ellipse";
 
-import type { GlobalPoint, LineSegment, Radians } from "@excalidraw/math";
+import type { GlobalPoint, Radians } from "@excalidraw/math";
 
 import {
   deconstructDiamondElement,
@@ -16,7 +14,7 @@ import {
   deconstructRectanguloidElement,
 } from "./utils";
 
-import { elementCenterPoint, getStarPoints } from "./bounds";
+import { elementCenterPoint, getStarElementSides } from "./bounds";
 
 import type {
   ElementsMap,
@@ -129,21 +127,6 @@ const distanceToStarElement = (
   const sides = getStarElementSides(element);
 
   return Math.min(...sides.map((s) => distanceToLineSegment(rotatedPoint, s)));
-};
-
-const getStarElementSides = (
-  element: ExcalidrawStarElement,
-): LineSegment<GlobalPoint>[] => {
-  const points = getStarPoints(element).map(([lx, ly]) =>
-    pointFrom<GlobalPoint>(element.x + lx, element.y + ly),
-  );
-  const sides: LineSegment<GlobalPoint>[] = [];
-  for (let i = 0; i < points.length; i++) {
-    sides.push(
-      lineSegment(points[i], points[(i + 1) % points.length]),
-    );
-  }
-  return sides;
 };
 
 /**

@@ -1,9 +1,18 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { API } from "@excalidraw/excalidraw/tests/helpers/api";
 
 import { getStarPoints } from "../src/bounds";
 import { ShapeCache } from "../src/shape";
 
 import type { ExcalidrawStarElement } from "../src/types";
+
+const currentDir = dirname(fileURLToPath(import.meta.url));
+
+const readElementSource = (fileName: string) =>
+  readFileSync(join(currentDir, "../src", fileName), "utf8");
 
 describe("star element", () => {
   it("getStarPoints returns 10 vertices for a pentagram", () => {
@@ -35,5 +44,21 @@ describe("star element", () => {
     expect(shape).toBeDefined();
     expect(shape).not.toBeNull();
     expect(Array.isArray(shape) ? shape.length : 1).toBeGreaterThan(0);
+  });
+
+  it("keeps star side construction in a single shared helper", () => {
+    const helperDefinitions = [
+      "bounds.ts",
+      "collision.ts",
+      "distance.ts",
+    ].flatMap((fileName) =>
+      Array.from(
+        readElementSource(fileName).matchAll(
+          /\b(?:export\s+)?const\s+getStarElementSides\s*=/g,
+        ),
+      ),
+    );
+
+    expect(helperDefinitions).toHaveLength(1);
   });
 });
