@@ -59,6 +59,13 @@ describe("setActiveTool()", () => {
     expect(h.state.activeTool.type).toBe("rectangle");
   });
 
+  it("should set star as the active tool type", async () => {
+    act(() => {
+      excalidrawAPI.setActiveTool({ type: "star" });
+    });
+    expect(h.state.activeTool.type).toBe("star");
+  });
+
   it("should set custom tool", async () => {
     expect(h.state.activeTool.type).toBe("selection");
     act(() => {
@@ -90,5 +97,16 @@ describe("getToolbarTools()", () => {
 
     expect(toolValues.filter((value) => value === "lasso")).toHaveLength(1);
     expect(toolValues.filter((value) => value === "selection")).toHaveLength(0);
+  });
+
+  it("includes star between rectangle and diamond", () => {
+    const toolValues = getToolValues("selection");
+    const rectIndex = toolValues.indexOf("rectangle");
+    const starIndex = toolValues.indexOf("star");
+    const diamondIndex = toolValues.indexOf("diamond");
+
+    expect(starIndex).toBeGreaterThan(-1);
+    expect(starIndex).toBe(rectIndex + 1);
+    expect(diamondIndex).toBe(starIndex + 1);
   });
 });

@@ -257,6 +257,10 @@ export const STRING_MIME_TYPES = {
   excalidrawlib: "application/vnd.excalidrawlib+json",
   // list of excalidraw library item ids
   excalidrawlibIds: "application/vnd.excalidrawlib.ids+json",
+  // shape templates bundle (JSON)
+  excalidrawTemplates: "application/vnd.excalidraw-template+json",
+  // list of shape template ids for drag-and-drop
+  excalidrawTemplateIds: "application/vnd.excalidraw-template.ids+json",
 } as const;
 
 export const MIME_TYPES = {
@@ -432,6 +436,7 @@ export const DEFAULT_ELEMENT_PROPS: {
 
 export const LIBRARY_SIDEBAR_TAB = "library";
 export const CANVAS_SEARCH_TAB = "search";
+export const SHAPE_TEMPLATES_SIDEBAR_TAB = "shapeTemplates";
 
 export const DEFAULT_SIDEBAR = {
   name: "default",
@@ -449,6 +454,7 @@ export const TOOL_TYPE = {
   selection: "selection",
   lasso: "lasso",
   rectangle: "rectangle",
+  star: "star",
   diamond: "diamond",
   ellipse: "ellipse",
   arrow: "arrow",
@@ -469,6 +475,7 @@ export const EDITOR_LS_KEYS = {
   // legacy naming (non)scheme
   MERMAID_TO_EXCALIDRAW: "mermaid-to-excalidraw",
   PUBLISH_LIBRARY: "publish-library-data",
+  CUSTOM_SHAPE_TEMPLATES: "excalidraw-custom-shape-templates",
 } as const;
 
 /**

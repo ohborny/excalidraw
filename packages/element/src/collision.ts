@@ -35,6 +35,8 @@ import {
   getCubicBezierCurveBound,
   getDiamondPoints,
   getElementBounds,
+  getStarPoints,
+  getStarElementSides,
   pointInsideBounds,
 } from "./bounds";
 import {
@@ -70,6 +72,7 @@ import type {
   ExcalidrawDiamondElement,
   ExcalidrawElement,
   ExcalidrawEllipseElement,
+  ExcalidrawStarElement,
   ExcalidrawFreeDrawElement,
   ExcalidrawLinearElement,
   ExcalidrawRectanguloidElement,
@@ -471,6 +474,14 @@ export const intersectElementWithLineSegment = (
         offset,
         onlyFirst,
       );
+    case "star":
+      return intersectStarWithLineSegment(
+        element,
+        elementsMap,
+        line,
+        offset,
+        onlyFirst,
+      );
     case "ellipse":
       return intersectEllipseWithLineSegment(
         element,
@@ -664,6 +675,33 @@ const intersectRectanguloidWithLineSegment = (
  * @param b
  * @returns
  */
+const intersectStarWithLineSegment = (
+  element: ExcalidrawStarElement,
+  elementsMap: ElementsMap,
+  l: LineSegment<GlobalPoint>,
+  offset: number = 0,
+  onlyFirst = false,
+): GlobalPoint[] => {
+  const center = elementCenterPoint(element, elementsMap);
+  const rotatedA = pointRotateRads(l[0], center, -element.angle as Radians);
+  const rotatedB = pointRotateRads(l[1], center, -element.angle as Radians);
+  const rotatedIntersector = lineSegment(rotatedA, rotatedB);
+
+  const sides = getStarElementSides(element);
+  const intersections: GlobalPoint[] = [];
+
+  lineIntersections(
+    sides,
+    rotatedIntersector,
+    intersections,
+    center,
+    element.angle,
+    onlyFirst,
+  );
+
+  return intersections;
+};
+
 const intersectDiamondWithLineSegment = (
   element: ExcalidrawDiamondElement,
   elementsMap: ElementsMap,
@@ -803,6 +841,16 @@ export const isBindableElementInsideOtherBindable = (
     const { x, y, width, height, angle } = element;
     const center = elementCenterPoint(element, elementsMap);
 
+    if (element.type === "star") {
+      const corners: GlobalPoint[] = getStarPoints(element).map(([lx, ly]) =>
+        pointRotateRads(
+          pointFrom<GlobalPoint>(x + lx, y + ly),
+          center,
+          angle,
+        ),
+      );
+      return corners;
+    }
     if (element.type === "diamond") {
       // Diamond has 4 corner points at the middle of each side
       const [topX, topY, rightX, rightY, bottomX, bottomY, leftX, leftY] =

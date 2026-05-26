@@ -144,6 +144,7 @@ export type ToolType =
   | "selection"
   | "lasso"
   | "rectangle"
+  | "star"
   | "diamond"
   | "ellipse"
   | "arrow"
@@ -637,6 +638,8 @@ export interface ExcalidrawProps {
   gridModeEnabled?: boolean;
   objectsSnapModeEnabled?: boolean;
   libraryReturnUrl?: string;
+  /** Additional shape templates merged with built-in defaults */
+  shapeTemplates?: import("./data/shapeTemplates/types").ShapeTemplate[];
   theme?: Theme;
   // @TODO come with better API before v0.18.0
   name?: string;

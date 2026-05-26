@@ -4,24 +4,17 @@ import React, {
   useMemo,
   useEffect,
   memo,
-  useRef,
 } from "react";
 
 import {
   LIBRARY_DISABLED_TYPES,
   randomId,
-  isShallowEqual,
   KEYS,
   isWritableElement,
   addEventListener,
   EVENT,
   CLASSES,
 } from "@excalidraw/common";
-
-import type {
-  ExcalidrawElement,
-  NonDeletedExcalidrawElement,
-} from "@excalidraw/element/types";
 
 import { trackEvent } from "../analytics";
 import { useUIAppState } from "../context/ui-appState";
@@ -32,12 +25,11 @@ import {
 import { atom, useAtom } from "../editor-jotai";
 import { t } from "../i18n";
 
-import { getSelectedElements } from "../scene";
+import { usePendingElementsMemo } from "../hooks/usePendingElementsMemo";
 
 import {
   useApp,
   useAppProps,
-  useExcalidrawElements,
   useExcalidrawSetAppState,
 } from "./App";
 import { LibraryMenuControlButtons } from "./LibraryMenuControlButtons";
@@ -51,7 +43,6 @@ import type {
   LibraryItem,
   ExcalidrawProps,
   UIAppState,
-  AppClassProperties,
 } from "../types";
 import type Library from "../data/library";
 
@@ -171,91 +162,6 @@ const LibraryMenuContent = memo(
     );
   },
 );
-
-const getPendingElements = (
-  elements: readonly NonDeletedExcalidrawElement[],
-  selectedElementIds: UIAppState["selectedElementIds"],
-) => ({
-  elements,
-  pending: getSelectedElements(
-    elements,
-    { selectedElementIds },
-    {
-      includeBoundTextElement: true,
-      includeElementsInFrames: true,
-    },
-  ),
-  selectedElementIds,
-});
-
-const usePendingElementsMemo = (
-  appState: UIAppState,
-  app: AppClassProperties,
-) => {
-  const elements = useExcalidrawElements();
-  const [state, setState] = useState(() =>
-    getPendingElements(elements, appState.selectedElementIds),
-  );
-
-  const selectedElementVersions = useRef(
-    new Map<ExcalidrawElement["id"], ExcalidrawElement["version"]>(),
-  );
-
-  useEffect(() => {
-    for (const element of state.pending) {
-      selectedElementVersions.current.set(element.id, element.version);
-    }
-  }, [state.pending]);
-
-  useEffect(() => {
-    if (
-      // Only update once pointer is released.
-      // Reading directly from app.state to make it clear it's not reactive
-      // (hence, there's potential for stale state)
-      app.state.cursorButton === "up" &&
-      app.state.activeTool.type === "selection"
-    ) {
-      setState((prev) => {
-        // if selectedElementIds changed, we don't have to compare versions
-        // ---------------------------------------------------------------------
-        if (
-          !isShallowEqual(prev.selectedElementIds, appState.selectedElementIds)
-        ) {
-          selectedElementVersions.current.clear();
-          return getPendingElements(elements, appState.selectedElementIds);
-        }
-        // otherwise we need to check whether selected elements changed
-        // ---------------------------------------------------------------------
-        const elementsMap = app.scene.getNonDeletedElementsMap();
-        for (const id of Object.keys(appState.selectedElementIds)) {
-          const currVersion = elementsMap.get(id)?.version;
-          if (
-            currVersion &&
-            currVersion !== selectedElementVersions.current.get(id)
-          ) {
-            // we can't update the selectedElementVersions in here
-            // because of double render in StrictMode which would overwrite
-            // the state in the second pass with the old `prev` state.
-            // Thus, we update versions in a separate effect. May create
-            // a race condition since current effect is not fully reactive.
-            return getPendingElements(elements, appState.selectedElementIds);
-          }
-        }
-        // nothing changed
-        // ---------------------------------------------------------------------
-        return prev;
-      });
-    }
-  }, [
-    app,
-    app.state.cursorButton,
-    app.state.activeTool.type,
-    appState.selectedElementIds,
-    elements,
-  ]);
-
-  return state.pending;
-};
 
 /**
  * This component is meant to be rendered inside <Sidebar.Tab/> inside our

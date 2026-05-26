@@ -42,6 +42,7 @@ import type {
   ExcalidrawDiamondElement,
   ExcalidrawElement,
   ExcalidrawEllipseElement,
+  ExcalidrawStarElement,
   ExcalidrawEmbeddableElement,
   ExcalidrawFrameLikeElement,
   ExcalidrawFreeDrawElement,
@@ -140,6 +141,55 @@ export const getPolygonShape = <Point extends GlobalPoint | LocalPoint>(
       pointRotateRads(pointFrom(x, y + height), center, angle),
     );
   }
+
+  return {
+    type: "polygon",
+    data,
+  };
+};
+
+const STAR_INNER_RADIUS_RATIO = 0.381966011250105;
+
+const getStarLocalPoints = (
+  width: number,
+  height: number,
+): [number, number][] => {
+  const cx = width / 2;
+  const cy = height / 2;
+  const outerRx = cx;
+  const outerRy = cy;
+  const points: [number, number][] = [];
+
+  for (let i = 0; i < 10; i++) {
+    const angle = -Math.PI / 2 + (i * Math.PI) / 5;
+    const radius = i % 2 === 0 ? 1 : STAR_INNER_RADIUS_RATIO;
+    let x = cx + radius * outerRx * Math.cos(angle);
+    let y = cy + radius * outerRy * Math.sin(angle);
+    if (x === 0) {
+      x = 0.01;
+    }
+    if (y === 0) {
+      y = 0.01;
+    }
+    points.push([x, y]);
+  }
+
+  return points;
+};
+
+export const getStarShape = <Point extends GlobalPoint | LocalPoint>(
+  element: ExcalidrawStarElement,
+): GeometricShape<Point> => {
+  const { angle, x, y } = element;
+  const cx = x + element.width / 2;
+  const cy = y + element.height / 2;
+  const center: Point = pointFrom(cx, cy);
+
+  const data: Polygon<Point> = polygon(
+    ...getStarLocalPoints(element.width, element.height).map(([lx, ly]) =>
+      pointRotateRads(pointFrom<Point>(x + lx, y + ly), center, angle),
+    ),
+  );
 
   return {
     type: "polygon",

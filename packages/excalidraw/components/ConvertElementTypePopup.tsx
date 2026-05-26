@@ -104,7 +104,7 @@ type ExcalidrawConvertibleElement =
   | ExcalidrawLinearElement;
 
 // indicates order of switching
-const GENERIC_TYPES = ["rectangle", "diamond", "ellipse"] as const;
+const GENERIC_TYPES = ["rectangle", "star", "diamond", "ellipse"] as const;
 // indicates order of switching
 const LINEAR_TYPES = [
   "line",

@@ -196,6 +196,14 @@
     "desc": "Click on a shape on canvas or paste a link.",
     "notFound": "Linked object wasn't found on canvas."
   },
+  "shapeTemplates": {
+    "hint": "Drag a template onto the canvas, or click to insert at the center.",
+    "title": "Shape templates",
+    "addSelection": "Add selection to templates",
+    "added": "Added to shape templates",
+    "noSelection": "Select shapes on the canvas to add a template.",
+    "unnamed": "Template {{n}}"
+  },
   "library": {
     "noItems": "No items added yet...",
     "hint_emptyLibrary": "Select an item on canvas to add it here, or install a library from the public repository, below.",
@@ -313,6 +321,7 @@
     "lasso": "Lasso selection",
     "image": "Insert image",
     "rectangle": "Rectangle",
+    "star": "Star",
     "diamond": "Diamond",
     "ellipse": "Ellipse",
     "arrow": "Arrow",
@@ -335,6 +344,7 @@
   },
   "element": {
     "rectangle": "Rectangle",
+    "star": "Star",
     "diamond": "Diamond",
     "ellipse": "Ellipse",
     "arrow": "Arrow",

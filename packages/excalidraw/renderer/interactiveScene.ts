@@ -25,6 +25,7 @@ import {
   deconstructRectanguloidElement,
   elementCenterPoint,
   getDiamondBaseCorners,
+  getStarPoints,
   FOCUS_POINT_SIZE,
   getOmitSidesForEditorInterface,
   getTransformHandles,
@@ -324,6 +325,21 @@ const renderBindingHighlightForBindableElement_simple = (
           context.closePath();
           context.stroke();
           break;
+        case "star": {
+          const starPoints = getStarPoints(suggestedBinding.element);
+          for (let i = 0; i < starPoints.length; i++) {
+            const [x1, y1] = starPoints[i];
+            const [x2, y2] = starPoints[(i + 1) % starPoints.length];
+            context.beginPath();
+            context.moveTo(
+              x1,
+              y1,
+            );
+            context.lineTo(x2, y2);
+            context.stroke();
+          }
+          break;
+        }
         case "diamond":
           {
             const [segments, curves] = deconstructDiamondElement(
@@ -665,6 +681,18 @@ const renderBindingHighlightForBindableElement_complex = (
           context.closePath();
           context.stroke();
           break;
+        case "star": {
+          const starPoints = getStarPoints(element);
+          for (let i = 0; i < starPoints.length; i++) {
+            const [x1, y1] = starPoints[i];
+            const [x2, y2] = starPoints[(i + 1) % starPoints.length];
+            context.beginPath();
+            context.moveTo(x1 - element.x + offset, y1 - element.y + offset);
+            context.lineTo(x2 - element.x + offset, y2 - element.y + offset);
+            context.stroke();
+          }
+          break;
+        }
         case "diamond":
           {
             const [segments, curves] = deconstructDiamondElement(

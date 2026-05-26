@@ -101,6 +101,18 @@ export const LibraryIcon = createIcon(
   tablerIconProps,
 );
 
+// tabler-icons: layout-grid
+export const ShapeTemplatesIcon = createIcon(
+  <g strokeWidth="1.25">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <rect x="4" y="4" width="6" height="6" rx="1" />
+    <rect x="14" y="4" width="6" height="6" rx="1" />
+    <rect x="4" y="14" width="6" height="6" rx="1" />
+    <rect x="14" y="14" width="6" height="6" rx="1" />
+  </g>,
+  tablerIconProps,
+);
+
 // tabler-icons: plus
 export const PlusIcon = createIcon(
   <svg strokeWidth="1.5">
@@ -334,6 +346,15 @@ export const RectangleIcon = createIcon(
   <g strokeWidth="1.5">
     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
     <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+  </g>,
+  tablerIconProps,
+);
+
+// tabler-icons: star
+export const StarIcon = createIcon(
+  <g strokeWidth="1.5">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1.003l3.093 -6.252l3.093 6.252l6.9 1.003l-5 4.867l1.179 6.873z" />
   </g>,
   tablerIconProps,
 );
